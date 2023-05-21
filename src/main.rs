@@ -5,7 +5,6 @@ macro_rules! V3 {
     };
 }
 
-mod random;
 mod vector_3;
 mod colour;
 mod ray;
