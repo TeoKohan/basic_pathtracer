@@ -97,21 +97,29 @@ impl Vector3 {
         v.x * w.x + v.y * w.y + v.z * w.z
     }
 
-    pub fn random(rng: &mut impl Rng) -> Vector3{
+    pub fn random(rng: &mut xorshift::StdRng) -> Vector3{
         V3!(rng.next_f32(), rng.next_f32(), rng.next_f32())
     }
 
-    pub fn random_in_sphere(rng: &mut impl Rng) -> Vector3 {
+    pub fn random_in_sphere(rng: &mut xorshift::StdRng) -> Vector3 {
         let theta: f32 = rng.next_f32() * 2.0 * PI;
         let phi: f32   = rng.next_f32() * PI;
         let rho: f32   = rng.next_f32();
         V3!(rho * phi.sin() * theta.cos(), rho * phi.sin() * theta.sin(), rho * phi.cos())
     }
 
-    pub fn random_unit_vector(rng: &mut impl Rng) -> Vector3 {
+    pub fn random_unit_vector(rng: &mut xorshift::StdRng) -> Vector3 {
         let theta: f32 = rng.next_f32() * 2.0 * PI;
         let phi: f32   = rng.next_f32() * PI;
         V3!(phi.sin() * theta.cos(), phi.sin() * theta.sin(), phi.cos())
+    }
+
+    pub fn abc(&self, v: &Vector3) -> Vector3 {
+        V3!(self.x * v.x, self.y * v.y, self.z * v.z)
+    }
+
+    pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
+        *v - 2.0 * (*v * *n) * *n
     }
 }
 

@@ -1,10 +1,14 @@
 use crate::vector_3::Vector3;
 use crate::vector_3::Point3;
+use std::rc::Rc;
 use crate::hit::{Surface, HitResult};
+use crate::material::Material;
+
 
 pub struct Sphere {
-    pub center : Point3,
-    pub radius : f32,
+    pub center: Point3,
+    pub radius: f32,
+    pub material: Rc<dyn Material>
 }
 
 enum QuadraticSolution {
@@ -24,6 +28,7 @@ fn solve_quadratic(a : f32, b : f32, c : f32) -> QuadraticSolution {
 }
 
 impl Surface for Sphere {
+
     fn hit(&self, ray : &crate::ray::Ray, min : f32, max : f32) -> HitResult {
 
         let o : Vector3 = ray.origin - self.center;
@@ -37,15 +42,15 @@ impl Surface for Sphere {
                 if min < one && one < max {
                     let p : Point3 = ray.at(one);
                     let n : Vector3 = (p - self.center) / self.radius;
-                    HitResult::Hit(p, n, one, ray.direction * n < 0.0)
+                    HitResult::Hit(p, n, one, self.material.clone(), ray.direction * n < 0.0)
                 } else if min < two && two < max {
                     let p : Point3 = ray.at(two);
                     let n : Vector3 = (p - self.center) / self.radius;
-                    HitResult::Hit(p, n, one, ray.direction * n < 0.0)
+                    HitResult::Hit(p, n, one, self.material.clone(), ray.direction * n < 0.0)
                 } else {
                     HitResult::None
                 }
-            },
+            }
         }
     }
 }

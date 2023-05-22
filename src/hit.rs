@@ -1,9 +1,11 @@
+use std::rc::Rc;
 use crate::vector_3::{Vector3, Point3};
 use crate::ray::Ray;
+use crate::material::Material;
 
 //Position, Normal, Distance, Outward
 pub enum HitResult {
-    Hit(Point3, Vector3, f32, bool),
+    Hit(Point3, Vector3, f32, Rc<dyn Material>, bool),
     None,
 }
 
@@ -21,9 +23,9 @@ impl Surface for HitList {
         let mut max: f32 = max;
 
         for object in self.objects.iter() {
-            if let HitResult::Hit(point, normal, t, outward) = object.hit(ray, min, max) {
+            if let HitResult::Hit(point, normal, t, material, outward) = object.hit(ray, min, max) {
                 max = t;
-                hit_record = HitResult::Hit(point, normal, t, outward);
+                hit_record = HitResult::Hit(point, normal, t, material, outward);
             }
         }
         hit_record
