@@ -1,18 +1,19 @@
-use std::ops;
+use std::{ops, f32::consts::PI};
+use xorshift::Rng;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3 {
-    pub x : f32,
-    pub y : f32,
-    pub z : f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 impl Vector3 {
-    pub const ZERO : Point3 = V3!(0.0, 0.0, 0.0);
-    pub const X : Point3 = V3!(1.0, 0.0, 0.0);
-    pub const Y : Point3 = V3!(0.0, 1.0, 0.0);
-    pub const Z : Point3 = V3!(0.0, 0.0, 1.0);
-    pub const ONE : Point3 = V3!(1.0, 1.0, 1.0);
+    pub const ZERO: Point3 = V3!(0.0, 0.0, 0.0);
+    pub const X: Point3 = V3!(1.0, 0.0, 0.0);
+    pub const Y: Point3 = V3!(0.0, 1.0, 0.0);
+    pub const Z: Point3 = V3!(0.0, 0.0, 1.0);
+    pub const ONE: Point3 = V3!(1.0, 1.0, 1.0);
 }
 
 pub type Point3 = Vector3;
@@ -92,8 +93,25 @@ impl Vector3 {
         V3!(self.x, self.y, self.z) / Vector3::length(self)
     }
 
-    pub fn dot(v : &Vector3, w : &Vector3) -> f32 {
+    pub fn dot(v: &Vector3, w: &Vector3) -> f32 {
         v.x * w.x + v.y * w.y + v.z * w.z
+    }
+
+    pub fn random(rng: &mut impl Rng) -> Vector3{
+        V3!(rng.next_f32(), rng.next_f32(), rng.next_f32())
+    }
+
+    pub fn random_in_sphere(rng: &mut impl Rng) -> Vector3 {
+        let theta: f32 = rng.next_f32() * 2.0 * PI;
+        let phi: f32   = rng.next_f32() * PI;
+        let rho: f32   = rng.next_f32();
+        V3!(rho * phi.sin() * theta.cos(), rho * phi.sin() * theta.sin(), rho * phi.cos())
+    }
+
+    pub fn random_unit_vector(rng: &mut impl Rng) -> Vector3 {
+        let theta: f32 = rng.next_f32() * 2.0 * PI;
+        let phi: f32   = rng.next_f32() * PI;
+        V3!(phi.sin() * theta.cos(), phi.sin() * theta.sin(), phi.cos())
     }
 }
 

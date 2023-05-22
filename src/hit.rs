@@ -1,6 +1,7 @@
 use crate::vector_3::{Vector3, Point3};
 use crate::ray::Ray;
 
+//Position, Normal, Distance, Outward
 pub enum HitResult {
     Hit(Point3, Vector3, f32, bool),
     None,
