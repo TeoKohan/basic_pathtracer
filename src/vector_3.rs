@@ -51,9 +51,9 @@ impl ops::Sub<Vector3> for Vector3 {
 }
 
 impl ops::Mul<Vector3> for Vector3 {
-    type Output = f32;
-    fn mul(self, rhs: Vector3) -> f32 {
-        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    type Output = Vector3;
+    fn mul(self, rhs: Vector3) -> Vector3 {
+        V3!(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z)
     }
 }
 
@@ -82,7 +82,7 @@ impl ops::Div<f32> for Vector3 {
 
 impl Vector3 {
     pub fn length_squared(&self) -> f32 {
-        *self * *self
+        Vector3::dot(self, self)
     }
 
     pub fn length(&self) -> f32 {
@@ -114,12 +114,14 @@ impl Vector3 {
         V3!(phi.sin() * theta.cos(), phi.sin() * theta.sin(), phi.cos())
     }
 
-    pub fn abc(&self, v: &Vector3) -> Vector3 {
-        V3!(self.x * v.x, self.y * v.y, self.z * v.z)
+    pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
+        *v - 2.0 * Vector3::dot(v, n) * *n
     }
 
-    pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
-        *v - 2.0 * (*v * *n) * *n
+    pub fn refract(uv: &Vector3, n: &Vector3, etai_over_etat: f32) -> Vector3 {
+        let cos_theta: f32 = f32::min(Vector3::dot(&-*uv, n), 1.0);
+        let r_out_perp: Vector3 =  etai_over_etat * (*uv + cos_theta * *n);
+        let r_out_parallel: Vector3 = -f32::sqrt((1.0 - r_out_perp.length_squared()).abs()) * *n;
+        return r_out_perp + r_out_parallel;
     }
 }
-

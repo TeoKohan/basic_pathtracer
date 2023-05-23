@@ -23,9 +23,9 @@ impl Surface for HitList {
         let mut max: f32 = max;
 
         for object in self.objects.iter() {
-            if let HitResult::Hit(point, normal, t, material, outward) = object.hit(ray, min, max) {
-                max = t;
-                hit_record = HitResult::Hit(point, normal, t, material, outward);
+            if let HitResult::Hit(point, normal, distance, material, outward) = object.hit(ray, min, max) {
+                max = distance;
+                hit_record = HitResult::Hit(point, normal, distance, material, outward);
             }
         }
         hit_record

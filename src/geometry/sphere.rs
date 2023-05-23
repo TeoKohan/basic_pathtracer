@@ -33,20 +33,24 @@ impl Surface for Sphere {
 
         let o : Vector3 = ray.origin - self.center;
         let a : f32 = ray.direction.length_squared();
-        let b : f32 = 2.0 * o * ray.direction;
+        let b : f32 = 2.0 * Vector3::dot(&o, &ray.direction);
         let c : f32 = o.length_squared() - self.radius * self.radius;
         
         match solve_quadratic(a, b, c) {
             QuadraticSolution::None => HitResult::None,
             QuadraticSolution::Result(one, two) => {
                 if min < one && one < max {
-                    let p : Point3 = ray.at(one);
-                    let n : Vector3 = (p - self.center) / self.radius;
-                    HitResult::Hit(p, n, one, self.material.clone(), ray.direction * n < 0.0)
+                    let p: Point3 = ray.at(one);
+                    let n: Vector3 = (p - self.center) / self.radius;
+                    let outward: bool = Vector3::dot(&ray.direction, &n) < 0.0;
+                    let n: Vector3 = if outward {n} else {-n};
+                    HitResult::Hit(p, n, one, self.material.clone(), outward)
                 } else if min < two && two < max {
-                    let p : Point3 = ray.at(two);
-                    let n : Vector3 = (p - self.center) / self.radius;
-                    HitResult::Hit(p, n, one, self.material.clone(), ray.direction * n < 0.0)
+                    let p: Point3 = ray.at(two);
+                    let n: Vector3 = (p - self.center) / self.radius;
+                    let outward: bool = Vector3::dot(&ray.direction, &n) < 0.0;
+                    let n: Vector3 = if outward {n} else {-n};
+                    HitResult::Hit(p, n, two, self.material.clone(), outward)
                 } else {
                     HitResult::None
                 }

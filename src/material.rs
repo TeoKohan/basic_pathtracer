@@ -4,6 +4,7 @@ use crate::ray;
 
 pub mod lambertian;
 pub mod metallic;
+pub mod dielectric;
 
 pub enum Scatter {
     None,
