@@ -22,7 +22,7 @@ use material::lambertian::Lambertian;
 
 use crate::material::Material;
 use crate::material::metallic::Metallic;
-use crate::vector_3::{Vector3, Point3};
+use crate::vector_3::{Vector3};
 use crate::colour::Colour;
 use crate::ray::Ray;
 
@@ -30,8 +30,8 @@ fn ray_colour(ray : &Ray, world : &dyn Surface, depth: u16, rng: &mut xorshift::
 
     let hit_result: HitResult = world.hit(ray, 0.005, 1024.0);
     match hit_result {
-        hit::HitResult::Hit(position, normal, _, ref material, _) => {
-            let target: Point3 = position + normal + Vector3::random_unit_vector(rng);
+        hit::HitResult::Hit(_, _, _, ref material, _) => {
+            //let target: Point3 = position + normal + Vector3::random_unit_vector(rng);
             if depth > 0 {
                 match material.scatter(ray, &hit_result, rng) {
                     material::Scatter::None => Colour::ZERO,
@@ -70,7 +70,8 @@ fn main() {
     let material_red: Rc::<dyn Material> = Rc::new(Lambertian{ albedo: V3!(0.8, 0.2, 0.1) });
     let material_blue: Rc::<dyn Material> = Rc::new(Lambertian{ albedo: V3!(0.1, 0.2, 0.8) });
     let material_yellow: Rc::<dyn Material> = Rc::new(Lambertian{ albedo: V3!(0.85, 0.7, 0.1) });
-    let material_metal: Rc::<dyn Material> = Rc::new(Metallic{ albedo: 0.85 * Vector3::ONE });
+    let material_metal_non_fuzzy: Rc::<dyn Material> = Rc::new(Metallic{ albedo: 0.85 * Vector3::ONE, fuzziness: 0.2 });
+    let material_metal_fuzzy: Rc::<dyn Material> = Rc::new(Metallic{ albedo: 0.85 * Vector3::ONE, fuzziness: 1.0 });
     
 
     //WORLD
@@ -79,8 +80,8 @@ fn main() {
     world.add(Sphere{center: V3!( 0.25, 0.00, -1.00), radius: 0.5, material: material_blue.clone()});
     world.add(Sphere{center: V3!(-0.75, 0.00, -1.75), radius: 0.5, material: material_yellow.clone()});
 
-    world.add(Sphere{center: V3!( 1.25, 0.00, -1.00), radius: 0.5, material: material_metal.clone()});
-    world.add(Sphere{center: V3!(-1.25, 0.00, -1.00), radius: 0.5, material: material_metal.clone()});
+    world.add(Sphere{center: V3!( 1.25, 0.00, -1.00), radius: 0.5, material: material_metal_non_fuzzy.clone()});
+    world.add(Sphere{center: V3!(-1.25, 0.00, -1.00), radius: 0.5, material: material_metal_fuzzy.clone()});
 
     world.add(Sphere{center: V3!( 0.00, -100.5, -1.00), radius: 100.0, material: material_grey.clone()});
 
