@@ -10,10 +10,24 @@ pub struct Vector3 {
 
 impl Vector3 {
     pub const ZERO: Point3 = V3!(0.0, 0.0, 0.0);
+    pub const ONE: Point3 = V3!(1.0, 1.0, 1.0);
+
+    pub const RIGHT: Point3 = V3!(1.0, 0.0, 0.0);
+    pub const UP: Point3 = V3!(0.0, 1.0, 0.0);
+    pub const FORWARD: Point3 = V3!(0.0, 0.0, 1.0);
+    pub const LEFT: Point3 = V3!(-1.0, 0.0, 0.0);
+    pub const DOWN: Point3 = V3!(0.0, -1.0, 0.0);
+    pub const BACKWARD: Point3 = V3!(0.0, 0.0, -1.0);
+
     pub const X: Point3 = V3!(1.0, 0.0, 0.0);
     pub const Y: Point3 = V3!(0.0, 1.0, 0.0);
     pub const Z: Point3 = V3!(0.0, 0.0, 1.0);
-    pub const ONE: Point3 = V3!(1.0, 1.0, 1.0);
+    pub const R: Point3 = V3!(1.0, 0.0, 0.0);
+    pub const G: Point3 = V3!(0.0, 1.0, 0.0);
+    pub const B: Point3 = V3!(0.0, 0.0, 1.0);
+    pub const U: Point3 = V3!(1.0, 0.0, 0.0);
+    pub const V: Point3 = V3!(0.0, 1.0, 0.0);
+    pub const W: Point3 = V3!(0.0, 0.0, 1.0);
 }
 
 pub type Point3 = Vector3;
@@ -97,21 +111,35 @@ impl Vector3 {
         v.x * w.x + v.y * w.y + v.z * w.z
     }
 
+    pub fn cross(v: &Vector3, w: &Vector3) -> Vector3 {
+        V3!(v.y * w.z - v.z * w.y, v.z * w.x - v.x * w.z, v.x * w.y - v.y * w.x)
+    }
+
     pub fn random(rng: &mut xorshift::StdRng) -> Vector3{
         V3!(rng.next_f32(), rng.next_f32(), rng.next_f32())
+    }
+
+    pub fn random_between(from: f32, to: f32, rng: &mut xorshift::StdRng) -> Vector3 {
+        Vector3::random(rng) * (to - from) + from * Vector3::ONE
+    }
+
+    pub fn random_in_disk(rng: &mut xorshift::StdRng) -> Vector3 {
+        let theta: f32 = rng.next_f32() * 2.0 * PI;
+        let radius: f32 = rng.next_f32();
+        V3!(radius * f32::cos(theta), radius * f32::sin(theta), 0.0)
     }
 
     pub fn random_in_sphere(rng: &mut xorshift::StdRng) -> Vector3 {
         let theta: f32 = rng.next_f32() * 2.0 * PI;
         let phi: f32   = rng.next_f32() * PI;
         let rho: f32   = rng.next_f32();
-        V3!(rho * phi.sin() * theta.cos(), rho * phi.sin() * theta.sin(), rho * phi.cos())
+        V3!(rho * f32::sin(phi) * f32::cos(theta), rho * f32::sin(phi) * f32::sin(theta), rho * f32::cos(phi))
     }
 
     pub fn random_unit_vector(rng: &mut xorshift::StdRng) -> Vector3 {
         let theta: f32 = rng.next_f32() * 2.0 * PI;
         let phi: f32   = rng.next_f32() * PI;
-        V3!(phi.sin() * theta.cos(), phi.sin() * theta.sin(), phi.cos())
+        V3!(f32::sin(phi) * f32::cos(theta), f32::sin(phi) * f32::sin(theta), f32::cos(phi))
     }
 
     pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {

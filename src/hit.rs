@@ -13,7 +13,7 @@ pub trait Surface {
     fn hit(&self, ray: &Ray, min: f32, max: f32) -> HitResult;
 }
 
-pub struct HitList  {
+pub struct HitList {
     pub objects: Vec<Box<dyn Surface>>
 }
 
